@@ -1,0 +1,33 @@
+services:
+  - type: web
+    name: flowpilot-ai
+    runtime: python
+    plan: starter
+    region: singapore
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: cd backend && python -m uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    autoDeploy: true
+    disk:
+      name: flowpilot-data
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.10
+      - key: FP_DB_URL
+        value: sqlite:////var/data/flowpilot.db
+      - key: FP_UPLOAD_DIR
+        value: /var/data/uploads
+      - key: FP_COOKIE_SECURE
+        value: "true"
+      - key: FP_MAX_MB
+        value: "10"
+      - key: FP_MAX_PAGES
+        value: "20"
+      - key: GROQ_MODEL
+        value: llama-3.3-70b-versatile
+      - key: GROQ_API_URL
+        value: https://api.groq.com/openai/v1/chat/completions
+      - key: GROQ_API_KEY
+        sync: false
